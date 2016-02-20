@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The  game 0.0.4</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="cover_game1.css" rel="stylesheet">
+</head>
+<body onkeydown="runUpDownForwardBack(event.keyCode)">
+<div class="site-wrapper">
+    <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+            <h1 id="a0" class="sc" style="display: none">score:
+                <span id="a1"> 0 </span>
+            </h1>
+            <h1 id="moneycount" class="mc" style="display: none">money:
+                <span id="moneycounter"> 0 </span>
+            </h1>
+            <br>
+            <img class="site-image" id="img" src="game_runner_logo.gif">
+            <br>
+            <canvas class="canvas" id="myCanvas" width="1000" height="500" style="display: none"></canvas>
+            <button class="btn button-container" id="4" onclick="startgame()"><b>Start</b></button>
+            <br>
+            <br>
+            <button class="btn button-container" id="3" onclick="setname()"><b>Name</b></button>
+            <br>
+            <br>
+            <div class="btn-group button-container" id="7">
+                <button type="button" class="btn"><b><span id="diffi"> Difficulty </span></b></button>
+                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                    <span class="sr-only">Меню с переключением</span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><button class="btn" onclick="setEASY()"><b>EASY</b></button></li>
+                    <li><button class="btn" onclick="setMEDIUM()"><b>MEDIUM</b></button></li>
+                    <li><button class="btn" onclick="setHARD()"><b>HARD</b></button></li>
+                    <li><button class="btn" onclick="setHARDCORE()"><b>HARDCORE</b></button></li>
+                </ul>
+            </div>
+            <br>
+            <br>
+            <div class="btn-group button-container" id="shop">
+                <button type="button" class="btn"><b><span id="shopno"> shop </span></b></button>
+                <button type="button" class="btn dropdown-toggle" data-toggle="dropdown">
+                    <span class="caret"></span>
+                    <span class="sr-only">Меню с переключением</span>
+                </button>
+                <ul class="dropdown-menu" role="menu">
+                    <li><button class="btn" onclick="allowinvis()"><b>Invisible</b></button></li>
+                </ul>
+            </div>
+            <br>
+            <br>
+            <button class="btn button-container" id="1" onclick="showres()"><b>Table</b></button>
+            <br>
+            <br>
+            <button class="btn button-container" id="2" onclick="alert('avoid green rectangles and collect yellow')"><b>help</b></button>
+            <!--div class="btn-group" id="dif" style="display: none">
+            <button id="1" onclick="setEASY()"><b>EASY</b></button>
+            <button id="2" onclick="setMEDIUM()"><b>MEDIUM</b></button>
+            <button id="3" onclick="setHARD()"><b>HARD</b></button>
+            <button id="4" onclick="setHARDCORE()"><b>HARDCORE</b></button></td>
+            </div-->
+            <br>
+            <br>
+            <div id="alert2" style="display: none" class="alert alert-warning"><span id="alert1"> 0 </span></div>
+            <div id="a4" style="display: none" class="alert alert-success">Your score <span id="a2"> 0 </span> and your money <span id="mon"> 0 </span><span>, </span><span id="a3"> 0 </span></div>
+            <script>
+                var invis=false;
+                function allowinvis(){
+                    if (money>=5&&invis!==true) {
+                        invis = true;
+                        money=money-5;
+                        document.getElementById('mon').innerHTML = money;
+                    }
+                    else {
+                        if (invis!==true) {
+                            var emon = 5 - money;
+                            document.getElementById('alert1').innerHTML = "earn more " + emon + " coins";
+                            document.getElementById("alert2").style.display = "";
+                        }
+                        else {
+                            document.getElementById('alert1').innerHTML = "you've already bought";
+                            document.getElementById("alert2").style.display = "";
+                        }
+                    }
+                }
+                var resulte=[];
+                /*var fir=document.getElementById(1);
+                 var sec=document.getElementById(2);
+                 var thir=document.getElementById(3);
+                 var fort=document.getElementById(4);
+                 var fiv=document.getElementById(5);*/
+                function randomInteger(min, max) {
+                    var rand = min + Math.random() * (max - min);
+                    rand = Math.round(rand);
+                    return rand;
+                }
+                function randomBlock(min, max) {
+                    var randa = min + Math.random() * (max - min);
+                    randa = Math.round(randa);
+                    return randa;
+                }
+                var pname=0;
+                var money=0;
+                function setname() {
+                    pname = prompt("your name");
+                    document.getElementById("alert2").style.display = "none"
+                }
+
+                function reDrawCircle(myCircle, context) {
+                    drawCircle(myCircle.oldX, myCircle.oldY, myCircle.r, myCircle.background, myCircle.borderWidth + 2, myCircle.background, context);
+                    drawCircle(myCircle.x, myCircle.y, myCircle.r, myCircle.fillStyle, myCircle.borderWidth, myCircle.strokeStyle, context);
+                    myCircle.oldX = myCircle.x;
+                    myCircle.oldY = myCircle.y;
+                }
+
+                function drawCircle(x, y, r, fillStyle, borderWidth, strokeStyle, context) {
+                    context.beginPath();
+                    context.arc(x, y, r, 0, 2 * Math.PI, false);
+                    context.fillStyle = fillStyle;
+                    context.fill();
+                    context.lineWidth = borderWidth;
+                    context.strokeStyle = strokeStyle;
+                    context.stroke();
+                }
+                var canvas = document.getElementById('myCanvas');
+                var context = canvas.getContext('2d');
+                var centerX = canvas.width / 5;
+                var centerY = canvas.height / 2;
+                var radiuss=30;
+                var radius=70;
+                var myRectangles = [];
+                var myCircle={
+                    x: centerX,
+                    y: centerY,
+                    oldX: centerX,
+                    oldY: centerY,
+                    r: radiuss,
+                    borderWidth: 5,
+                    fillStyle: 'blue',
+                    strokeStyle: '#003300',
+                    background: 'white'
+                };
+                var score=0;
+                var final=1;
+                var plus=0;
+                function runUpDownForwardBack(k) {
+                    switch (k) {
+                        case 38:
+                            if(myCircle.y-myCircle.r-5>0)
+                                myCircle.y = myCircle.y - 5;
+                            reDrawCircle(myCircle, context);
+                            break;
+                        case 40:
+                            if(myCircle.y+myCircle.r+5<canvas.height)
+                                myCircle.y = myCircle.y + 5;
+                            reDrawCircle(myCircle,context);
+                            break;
+                        case 39:
+                            if(myCircle.x+myCircle.r+5<canvas.width/2)
+                                myCircle.x = myCircle.x + 5;
+                            reDrawCircle(myCircle,context);
+                            break;
+                        case 37:
+                            if(myCircle.x-myCircle.r-5>0)
+                                myCircle.x = myCircle.x - 5;
+                            reDrawCircle(myCircle,context);
+                            break;
+
+                    }
+                }
+                var gamemode=0;
+                function setEASY() {
+                    gamemode="EASY";
+                    document.getElementById("alert2").style.display = "none";
+                    document.getElementById('diffi').innerHTML = "EASY";
+                }
+                function setMEDIUM() {
+                    gamemode="MEDIUM";
+                    document.getElementById("alert2").style.display = "none";
+                    document.getElementById('diffi').innerHTML = "MEDIUM";
+                }
+                function setHARD() {
+                    gamemode="HARD";
+                    document.getElementById("alert2").style.display = "none";
+                    document.getElementById('diffi').innerHTML = "HARD";
+                }
+                function setHARDCORE() {
+                    gamemode="HARDCORE";
+                    document.getElementById("alert2").style.display = "none";
+                    document.getElementById('diffi').innerHTML = "HARDCORE";
+                }
+                function startgame() {
+                    if (pname != 0) {
+                        if (gamemode == "EASY" || gamemode == "MEDIUM" || gamemode == "HARD" || gamemode == "HARDCORE") {
+                            if (gamemode == "HARDCORE") {
+                                plus = 2;
+                                final = 0;
+                            }
+                            else if (gamemode == "HARD") {
+                                plus = 1;
+                                final = 0;
+                            }
+                            else if (gamemode == "MEDIUM") {
+                                plus = 0.5;
+                                final = 0;
+                            }
+                            else if (gamemode == "EASY") {
+                                plus = 0;
+                                final = 0;
+                            }
+                            document.getElementById('moneycounter').innerHTML = money;
+                            document.getElementById("moneycount").style.display = "";
+                            document.body.style.overflow='hidden';
+                            document.getElementById("1").style.display = "none";
+                            document.getElementById("myCanvas").style.display = "";
+                            document.getElementById("2").style.display = "none";
+                            document.getElementById("3").style.display = "none";
+                            document.getElementById("4").style.display = "none";
+                            document.getElementById("7").style.display = "none";
+                            document.getElementById("alert2").style.display = "none";
+                            document.getElementById("a4").style.display = "none";
+                            document.getElementById("a0").style.display = "";
+                            document.getElementById("img").style.display = "none";
+                            //document.getElementById("dif").style.display = "none";
+                            reDrawCircle(myCircle, context);
+                            window.requestAnimFrame = (function (callback) {
+                                return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
+                                        function (callback) {
+                                            window.setTimeout(callback, 1000 / 60);
+                                        };
+                            })();
+                            function reDrawRectangle(rect, context) {
+                                drawRectangle(rect.oldX, rect.oldY, rect.width, rect.height, rect.borderWidth + 1, rect.background, rect.background, context);
+                                drawRectangle(rect.x, rect.y, rect.width, rect.height, rect.borderWidth, rect.fillStyle, rect.strokeStyle, context);
+                                rect.oldX = rect.x;
+                                rect.oldY = rect.y;
+                            }
+
+                            function drawRectangle(x, y, width, height, borderWidth, fillStyle, strokeStyle, context) {
+                                context.beginPath();
+                                context.rect(x, y, width, height);
+                                context.fillStyle = fillStyle;
+                                context.fill();
+                                context.lineWidth = borderWidth;
+                                context.strokeStyle = strokeStyle;
+                                context.stroke();
+                            }
+
+                            var step = 2;
+                            var pathpast = 0;
+
+                            function animate(myRectangles, canvas, context) {
+                                var gg = 1;
+                                // while (gg) {
+                                if (((pathpast / 500) == Math.round(pathpast / 500)) && pathpast > 1) {
+                                    step += plus;
+                                }
+                                if (step > 15) {
+                                    step = 14;
+                                }
+                                for (var i = 0; i < myRectangles.length; i++) {
+                                    var myRectangle = myRectangles[i];
+                                    myRectangle.x = myRectangle.x - step;
+                                    reDrawRectangle(myRectangle, context);
+                                    pathpast++;
+                                    if (myRectangle.onright==true&&myRectangle.x<myCircle.x) {
+                                        score++;
+                                        myRectangle.onright=false;
+                                    }
+                                    //if ((myRectangle.y + myRectangle.height + 100) < myCircle.y && (myRectangle.y + myRectangle.height) > myCircle.y || (myRectangle.y - 100) > myCircle.y && (myRectangle.y) < myCircle.y) {
+                                    //  score = score + 10;
+                                    //}
+                                    document.getElementById('a1').innerHTML = score;
+                                    document.getElementById('a2').innerHTML = score;
+                                    document.getElementById('a3').innerHTML = pname;
+                                    if (overlap(myRectangle, myCircle)) {
+                                        if (myRectangle.fillStyle==myRectangle.spcolor){
+                                            if (myRectangle.sponright==true) {
+                                                money++;
+                                                document.getElementById('moneycounter').innerHTML = money;
+                                                document.getElementById('mon').innerHTML = money;
+                                                myRectangles.splice(i, 1);
+                                                drawRectangle(myRectangle.x, myRectangle.y, myRectangle.width, myRectangle.height, myRectangle.borderWidth+1, myRectangle.background, myRectangle.background, context);
+                                                myRectangle.sponright = false;
+                                            }
+                                        }
+                                        else {
+                                            if (invis==false) {
+                                                boom(context, myCircle);
+                                                gg = 0;
+                                                pathpast = 0;
+                                                return;
+                                            }
+                                            else {
+                                                myRectangles.splice(i, 1);
+                                                drawRectangle(myRectangle.x, myRectangle.y, myRectangle.width, myRectangle.height, myRectangle.borderWidth+1, myRectangle.background, myRectangle.background, context);
+                                                invis = false;
+                                            }
+                                            }
+                                        }
+                                    }
+                                //}
+                                deleteRectangles(myRectangles);
+                                generateRectangle(myRectangles);
+                                // request new frame
+                                requestAnimFrame(function () {
+                                    animate(myRectangles, canvas, context);
+                                });
+                            }
+
+                            function generateRectangle(myRectangles) {
+                                var xGen = canvas.width - 100;
+                                var randomY = randomInteger(1, canvas.height - 50);
+                                if (myRectangles.length > 0) {
+                                    var r = myRectangles[myRectangles.length - 1];
+                                    if (xGen - r.x - r.width - 4 * myCircle.r < 0) {
+                                        return;
+                                    }
+                                }
+                                var rect = {
+                                    x: xGen,
+                                    y: randomY,
+                                    oldX: xGen,
+                                    oldY: 325,
+                                    width: 50,
+                                    height: 50,
+                                    borderWidth: 5,
+                                    fillStyle: 'green',
+                                    strokeStyle: 'black',
+                                    background: 'white',
+                                    spcolor: 'yellow',
+                                    onright: true,
+                                    sponright: true
+                                };
+                                if (randomBlock(0,2)==0){
+                                   rect.fillStyle=rect.spcolor
+                                }
+                                myRectangles.push(rect);
+                            }
+
+                            function overlap(r, c) {
+                                if (r.y + r.height >= c.y && r.y <= c.y && r.x + r.width >= c.x - c.r && r.x <= c.x + c.r || r.x + r.width >= c.x && r.x <= c.x && r.y + r.height >= c.y - c.r && r.y <= c.y + c.r || ((r.x - c.x) * (r.x - c.x) + (r.y - c.y) * (r.y - c.y)) <= (c.r) * (c.r) || ((r.x - c.x) * (r.x - c.x) + (r.y + r.height - c.y) * (r.y + r.height - c.y)) <= (c.r) * (c.r) || ((r.x + r.width - c.x) * (r.x + r.width - c.x) + (r.y + r.height - c.y) * (r.y + r.height - c.y)) <= (c.r) * (c.r) || ((r.x + r.width - c.x) * (r.x + r.width - c.x) + (r.y - c.y) * (r.y - c.y)) <= (c.r) * (c.r)) {
+                                    return true;
+                                }
+                                else
+                                    return false;
+                            }
+
+                            function deleteRectangles(myRectangles) {
+                                for (var i = 0; i < myRectangles.length; i++) {
+                                    var myRectangle = myRectangles[i];
+                                    if (myRectangle.x + myRectangle.width + 3 <= 0) {
+                                        myRectangles.splice(i--, 1);
+                                    }
+                                }
+                            }
+
+                            function boom(context, myCircle) {
+                                radius = 70;
+                                context.beginPath();
+                                context.arc(myCircle.x, myCircle.y, radius, 0, 2 * Math.PI, false);
+                                context.fillStyle = 'red';
+                                context.fill();
+                                context.lineWidth = 5;
+                                context.strokeStyle = '#003300';
+                                context.stroke();
+                                var delay = 20;
+                                for (var i = 0; i < 50; i++) {
+                                    setTimeout(function () {
+                                        context.beginPath();
+                                        context.arc(myCircle.x, myCircle.y, radius, 0, 2 * Math.PI, false);
+                                        radius += 1;
+                                        context.fillStyle = 'red';
+                                        context.fill();
+                                        context.lineWidth = 5;
+                                        context.strokeStyle = '#003300';
+                                        context.stroke();
+                                    }, delay * i);
+                                }
+                                setTimeout(function () {
+                                    //alert("your score "+pname+" " + score);
+                                    document.getElementById("a4").style.display = "";
+                                    //gamemode = 0;
+                                    resulte.push(score);
+                                    score = 0;
+                                    myRectangles.splice(0, myRectangles.length);
+                                    document.getElementById("a0").style.display = "none";
+                                    document.getElementById("1").style.display = "";
+                                    document.getElementById("2").style.display = "";
+                                    document.getElementById("3").style.display = "";
+                                    document.getElementById("4").style.display = "";
+                                    document.getElementById("7").style.display = "";
+                                    document.getElementById("myCanvas").style.display = "none";
+                                    document.getElementById("img").style.display = "";
+                                    document.body.style.overflow=''
+                                    document.getElementById("moneycount").style.display = "none";
+                                }, delay * 50);
+                            }
+
+                            function startAnimation() {
+                                context.clearRect(0, 0, canvas.width, canvas.height);
+
+                                reDrawCircle(myCircle, context);
+                                // wait one second before starting animation
+                                setTimeout(function () {
+                                    animate(myRectangles, canvas, context);
+                                }, 1000);
+                            }
+
+
+                            startAnimation();
+                        }
+                        else {
+                            // document.getElementById("dif").style.display = "";
+                            document.getElementById('alert1').innerHTML = "set complexity level";
+                            document.getElementById("alert2").style.display = "";
+                        }
+                    }
+                    else {
+                        document.getElementById('alert1').innerHTML = "set name";
+                        document.getElementById("alert2").style.display = "";
+                    }
+                }
+                function showres(){
+                    for (var j=1;j<resulte.length;j++) {
+                        for (var k = 0; k < resulte.length; k++) {
+                            if (resulte[k] > resulte[k+1]) {
+                                var prom = resulte[k+1];
+                                resulte[k+1] = resulte[k];
+                                resulte[k] = prom;
+                            }
+                        }
+                    }
+                    alert(resulte);
+                }
+            </script>
+        </div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+</body>
+</html>
