@@ -52,7 +52,7 @@
                 <ul class="dropdown-menu" role="menu">
                     <li><button class="btn" onclick="allowinvis()"><b>Invisible cost 5</b></button></li>
                     <li><button class="btn" onclick="allowdestroyer()"><b>Destroyer cost 15</b></button></li>
-                    <li><button class="btn" onclick="allowrandomevent()"><b>Random event cost 35</b></button></li>
+                    <li><button class="btn" onclick="allowrandomevent()"><b>Random event cost 8</b></button></li>
                 </ul>
             </div>
             <br>
@@ -72,6 +72,34 @@
             <div id="alert2" style="display: none" class="alert alert-warning"><span id="alert1"> 0 </span></div>
             <div id="a4" style="display: none" class="alert alert-success">Your score <span id="a2"> 0 </span> and your money <span id="mon"> 0 </span><span>, </span><span id="a3"> 0 </span></div>
             <script>
+                var theend=false;
+                function explode(myShape,context) {
+                    radius = 10;
+                    var delay = 20;
+                    for (var i = 0; i < 50; i++) {
+                        setTimeout(function () {
+                            context.beginPath();
+                            context.arc(myShape.x, myShape.y, radius, 0, 2 * Math.PI, false);
+                            radius += 0.1;
+                            context.fillStyle = 'red';
+                            context.fill();
+                            context.lineWidth = 5;
+                            context.strokeStyle = '#003300';
+                            context.stroke();
+                        }, delay * i);
+                    }
+                    setTimeout(function () {
+                        context.beginPath();
+                        context.arc(myShape.x, myShape.y, radius, 0, 2 * Math.PI, false);
+                        radius += 0.1;
+                        context.fillStyle = 'white';
+                        context.fill();
+                        context.lineWidth = 6;
+                        context.strokeStyle = 'white';
+                        context.stroke();
+                        reDrawCircle(myCircle,context)
+                    }, delay * i);
+                }
                 function randomEvent(min, max) {
                     var randaa = min + Math.random() * (max - min);
                     randaa = Math.round(randaa);
@@ -81,25 +109,30 @@
                     switch (k) {
                         case 13:
                             if (randev==true) {
-                                if (randomEvent(0, 9)==0){
-                                    if (score>=20) {
-                                        score = score - 20;
-                                    }
-                                    else {
-                                        score=0;
-                                    }
+                                if (randomEvent(0, 9)==0) {
+                                    theend=true;
                                 }
                                 else {
-                                    if (randomEvent(0, 9)==9) {
-                                        score += 100
-                                    }
-                                    else {
-                                        if (randomEvent(0, 9)==5){
-                                            invis=true;
+                                    if (randomEvent(0, 9)==8) {
+                                        if (score>=20) {
+                                            score = score - 20;
                                         }
                                         else {
-                                            if (randomEvent(0, 9)==1||randomEvent(0, 9)==2||randomEvent(0, 9)==3||randomEvent(0, 9)==4||randomEvent(0, 9)==6||randomEvent(0, 9)==7){
-                                                score+=5;
+                                            score=0;
+                                        }
+                                    }
+                                    else {
+                                        if (randomEvent(0, 9) == 9) {
+                                            score += 100
+                                        }
+                                        else {
+                                            if (randomEvent(0, 9) == 5) {
+                                                invis = true;
+                                            }
+                                            else {
+                                                if (randomEvent(0, 9) == 1 || randomEvent(0, 9) == 2 || randomEvent(0, 9) == 3 || randomEvent(0, 9) == 4 || randomEvent(0, 9) == 6 || randomEvent(0, 9) == 7) {
+                                                    score += 5;
+                                                }
                                             }
                                         }
                                     }
@@ -110,14 +143,14 @@
                     }
                 }
                 function allowrandomevent(){
-                    if (money>=1&&randev!==true){
+                    if (money>=8&&randev!==true){
                         randev=true;
-                        money=money-1;
+                        money=money-8;
                         document.getElementById('mon').innerHTML = money;
                     }
                     else {
                         if (randev!==true) {
-                            var eeemon = 1 - money;
+                            var eeemon = 8 - money;
                             document.getElementById('alert1').innerHTML = "earn more " + eeemon + " coins";
                             document.getElementById("alert2").style.display = "";
                         }
@@ -140,6 +173,7 @@
                                     context.lineWidth = myRectangle.borderWidth+1;
                                     context.strokeStyle = myRectangle.background;
                                     context.stroke();
+                                    explode(myRectangle,context);
                                     myRectangles.splice(i--, 1);
                                 }
                                 destroyer=false;
@@ -188,11 +222,6 @@
                     }
                 }
                 var resulte=[];
-                /*var fir=document.getElementById(1);
-                 var sec=document.getElementById(2);
-                 var thir=document.getElementById(3);
-                 var fort=document.getElementById(4);
-                 var fiv=document.getElementById(5);*/
                 function randomInteger(min, max) {
                     var rand = min + Math.random() * (max - min);
                     rand = Math.round(rand);
@@ -314,6 +343,7 @@
                             }
                             document.getElementById('moneycounter').innerHTML = money;
                             document.getElementById("moneycount").style.display = "";
+                            document.getElementById("shop").style.display = "none";
                             document.body.style.overflow='hidden';
                             document.getElementById("1").style.display = "none";
                             document.getElementById("myCanvas").style.display = "";
@@ -334,6 +364,9 @@
                                         };
                             })();
                             function reDrawRectangle(rect, context) {
+                                if (rect.fillStyle==rect.spcolor){
+                                    rect.strokeStyle=rect.background;
+                                }
                                 drawRectangle(rect.oldX, rect.oldY, rect.width, rect.height, rect.borderWidth + 1, rect.background, rect.background, context);
                                 drawRectangle(rect.x, rect.y, rect.width, rect.height, rect.borderWidth, rect.fillStyle, rect.strokeStyle, context);
                                 rect.oldX = rect.x;
@@ -371,12 +404,16 @@
                                         score++;
                                         myRectangle.onright=false;
                                     }
-                                    //if ((myRectangle.y + myRectangle.height + 100) < myCircle.y && (myRectangle.y + myRectangle.height) > myCircle.y || (myRectangle.y - 100) > myCircle.y && (myRectangle.y) < myCircle.y) {
-                                    //  score = score + 10;
-                                    //}
                                     document.getElementById('a1').innerHTML = score;
                                     document.getElementById('a2').innerHTML = score;
                                     document.getElementById('a3').innerHTML = pname;
+                                    if (theend==true){
+                                        boom(context, myCircle);
+                                        gg = 0;
+                                        pathpast = 0;
+                                        theend=false;
+                                        return;
+                                    }
                                     if (overlap(myRectangle, myCircle)) {
                                         if (myRectangle.fillStyle==myRectangle.spcolor){
                                             if (myRectangle.sponright==true) {
@@ -437,7 +474,7 @@
                                     sponright: true
                                 };
                                 if (randomBlock(0,2)==0){
-                                    rect.fillStyle=rect.spcolor
+                                    rect.fillStyle=rect.spcolor;
                                 }
                                 myRectangles.push(rect);
                             }
@@ -491,6 +528,7 @@
                                     document.getElementById("4").style.display = "";
                                     document.getElementById("7").style.display = "";
                                     document.getElementById("myCanvas").style.display = "none";
+                                    document.getElementById("shop").style.display = "";
                                     document.getElementById("img").style.display = "";
                                     document.body.style.overflow='';
                                     document.getElementById("moneycount").style.display = "none";
