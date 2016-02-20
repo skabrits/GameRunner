@@ -327,7 +327,7 @@
                             document.getElementById("img").style.display = "none";
                             //document.getElementById("dif").style.display = "none";
                             reDrawCircle(myCircle, context);
-                            window.requestAnimFrame = (function (callback) {
+                            window.requestAnimFrame = (function () {
                                 return window.requestAnimationFrame || window.webkitRequestAnimationFrame || window.mozRequestAnimationFrame || window.oRequestAnimationFrame || window.msRequestAnimationFrame ||
                                         function (callback) {
                                             window.setTimeout(callback, 1000 / 60);
@@ -443,11 +443,7 @@
                             }
 
                             function overlap(r, c) {
-                                if (r.y + r.height >= c.y && r.y <= c.y && r.x + r.width >= c.x - c.r && r.x <= c.x + c.r || r.x + r.width >= c.x && r.x <= c.x && r.y + r.height >= c.y - c.r && r.y <= c.y + c.r || ((r.x - c.x) * (r.x - c.x) + (r.y - c.y) * (r.y - c.y)) <= (c.r) * (c.r) || ((r.x - c.x) * (r.x - c.x) + (r.y + r.height - c.y) * (r.y + r.height - c.y)) <= (c.r) * (c.r) || ((r.x + r.width - c.x) * (r.x + r.width - c.x) + (r.y + r.height - c.y) * (r.y + r.height - c.y)) <= (c.r) * (c.r) || ((r.x + r.width - c.x) * (r.x + r.width - c.x) + (r.y - c.y) * (r.y - c.y)) <= (c.r) * (c.r)) {
-                                    return true;
-                                }
-                                else
-                                    return false;
+                                return r.y + r.height >= c.y && r.y <= c.y && r.x + r.width >= c.x - c.r && r.x <= c.x + c.r || r.x + r.width >= c.x && r.x <= c.x && r.y + r.height >= c.y - c.r && r.y <= c.y + c.r || ((r.x - c.x) * (r.x - c.x) + (r.y - c.y) * (r.y - c.y)) <= (c.r) * (c.r) || ((r.x - c.x) * (r.x - c.x) + (r.y + r.height - c.y) * (r.y + r.height - c.y)) <= (c.r) * (c.r) || ((r.x + r.width - c.x) * (r.x + r.width - c.x) + (r.y + r.height - c.y) * (r.y + r.height - c.y)) <= (c.r) * (c.r) || ((r.x + r.width - c.x) * (r.x + r.width - c.x) + (r.y - c.y) * (r.y - c.y)) <= (c.r) * (c.r);
                             }
 
                             function deleteRectangles(myRectangles) {
