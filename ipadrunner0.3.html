@@ -277,30 +277,21 @@
                 var score=0;
                 var final=1;
                 var plus=0;
-                function runUpDownForwardBack(k) {
-                    switch (k) {
-                        case 38:
-                            if(myCircle.y-myCircle.r-5>0)
-                                myCircle.y = myCircle.y - 5;
-                            reDrawCircle(myCircle, context);
-                            break;
-                        case 40:
-                            if(myCircle.y+myCircle.r+5<canvas.height)
-                                myCircle.y = myCircle.y + 5;
-                            reDrawCircle(myCircle,context);
-                            break;
-                        case 39:
-                            if(myCircle.x+myCircle.r+5<canvas.width/2)
-                                myCircle.x = myCircle.x + 5;
-                            reDrawCircle(myCircle,context);
-                            break;
-                        case 37:
-                            if(myCircle.x-myCircle.r-5>0)
-                                myCircle.x = myCircle.x - 5;
-                            reDrawCircle(myCircle,context);
-                            break;
-
-                    }
+                function detectHit(x1,y1,x2,y2,r) {
+                    if (((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) <= (r) * (r)) return false;
+                    return true;
+                }
+                    function runUpDownForwardBack(k) {
+                        canvas.addEventListener('touchmove', function() {
+                            var touch = event.targetTouches[0];
+                            if (detectHit(myCircle.x, myCircle.y, touch.pageX, touch.pageY, myCircle.r)) {
+                                    myCircle.x= touch.pageX;
+                                    myCircle.y= touch.pageY;
+                                reDrawCircle(myCircle,context);
+                                }
+                            event.preventDefault();
+                        },false);
+                    reDrawCircle(myCircle,context);
                 }
                 var gamemode=0;
                 function setEASY() {
