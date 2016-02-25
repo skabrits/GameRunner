@@ -22,6 +22,8 @@
             <img class="site-image" id="img" src="game_runner_logo.gif">
             <br>
             <canvas class="canvas" id="myCanvas" width="1000" height="500" style="display: none"></canvas>
+            <button class="btn button-container" id="d" onclick="destract()" style="display: none">destroyer</button>
+            <button class="btn button-container" id="r" onclick="revent()" style="display: none">random event</button>
             <button class="btn button-container" id="4" onclick="startgame()"><b>Start</b></button>
             <br>
             <br>
@@ -104,6 +106,57 @@
                     var randaa = min + Math.random() * (max - min);
                     randaa = Math.round(randaa);
                     return randaa;
+                }
+                function revent(){
+                    if (randev==true) {
+                        var rnd = randomEvent(0, 9);
+                        if (rnd==0) {
+                            theend=true;
+                        }
+                        else {
+                            if (rnd==8) {
+                                if (score>=20) {
+                                    score = score - 20;
+                                }
+                                else {
+                                    score=0;
+                                }
+                            }
+                            else {
+                                if (rnd == 9) {
+                                    score += 100
+                                }
+                                else {
+                                    if (rnd == 5) {
+                                        invis = true;
+                                    }
+                                    else {
+                                        if (rnd == 1 || rnd == 2 || rnd == 3 || rnd == 4 || rnd == 6 || rnd == 7) {
+                                            score += 5;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        randev=false;
+                    }
+                }
+                function destract(){
+                    if (destroyer==true) {
+                        for (var i = 0; i < myRectangles.length; i++) {
+                            var myRectangle = myRectangles[i];
+                            context.beginPath();
+                            context.rect(myRectangle.x, myRectangle.y, myRectangle.width, myRectangle.height);
+                            context.fillStyle = myRectangle.background;
+                            context.fill();
+                            context.lineWidth = myRectangle.borderWidth+1;
+                            context.strokeStyle = myRectangle.background;
+                            context.stroke();
+                            explode(myRectangle,context);
+                            myRectangles.splice(i--, 1);
+                        }
+                        destroyer=false;
+                    }
                 }
                 function onenterdown(k){
                     switch (k) {
@@ -233,7 +286,7 @@
                     randa = Math.round(randa);
                     return randa;
                 }
-                var pname=0;
+                var pname="guest";
                 var money=0;
                 function setname() {
                     pname = prompt("your name");
@@ -302,7 +355,7 @@
 
                     }
                 }
-                var gamemode=0;
+                var gamemode="EASY";
                 function setEASY() {
                     gamemode="EASY";
                     document.getElementById("alert2").style.display = "none";
@@ -344,6 +397,8 @@
                             }
                             document.getElementById('moneycounter').innerHTML = money;
                             document.getElementById("moneycount").style.display = "";
+                            document.getElementById("d").style.display = "";
+                            document.getElementById("r").style.display = "";
                             document.getElementById("shop").style.display = "none";
                             document.body.style.overflow='hidden';
                             document.getElementById("1").style.display = "none";
@@ -522,6 +577,8 @@
                                     resulte.push(score);
                                     score = 0;
                                     myRectangles.splice(0, myRectangles.length);
+                                    document.getElementById("d").style.display = "none";
+                                    document.getElementById("r").style.display = "none";
                                     document.getElementById("a0").style.display = "none";
                                     document.getElementById("1").style.display = "";
                                     document.getElementById("2").style.display = "";
@@ -572,6 +629,50 @@
                     }
                     alert(resulte);
                 }
+
+                function detectHit(x1,y1,x2,y2,r) {
+                    return ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) <= (r) * (r);
+
+                }
+                function initTouch() {
+                    canvas.addEventListener('touchmove', function(event) {
+                        var touch = event.targetTouches[0];
+                        var offset = getOffset(canvas);
+
+                        if (detectHit(myCircle.x, myCircle.y, touch.pageX-offset.left, touch.pageY-offset.top, myCircle.r)) {
+                            myCircle.x= touch.pageX-offset.left;
+                            myCircle.y= touch.pageY-offset.top;
+                            reDrawCircle(myCircle,context);
+                        }
+                        event.preventDefault();
+                    },false);
+                    reDrawCircle(myCircle,context);
+                }
+
+                var deviceHeight = window.innerHeight;
+                var deviceWidth = window.innerWidth;
+                var canvasHeight = Math.min(500, deviceHeight)-20;
+                var canvasWidth = Math.min(1000, deviceWidth)-20;
+
+                canvas.width=canvasWidth;
+                canvas.height=canvasHeight;
+
+                function getOffset(obj) {
+                    var offsetLeft = 0;
+                    var offsetTop = 0;
+                    do {
+                        if (!isNaN(obj.offsetLeft)) {
+                            offsetLeft += obj.offsetLeft;
+                        }
+                        if (!isNaN(obj.offsetTop)) {
+                            offsetTop += obj.offsetTop;
+                        }
+                    } while(obj = obj.offsetParent );
+                    return {left: offsetLeft, top: offsetTop};
+                }
+
+                initTouch();
+
             </script>
         </div>
     </div>
