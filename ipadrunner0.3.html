@@ -7,7 +7,7 @@
     <link href="css/bootstrap.min.css" rel="stylesheet">
     <link href="cover_game1.css" rel="stylesheet">
 </head>
-<body onkeydown="runUpDownForwardBack(event.keyCode); onspacedown(event.keyCode); onenterdown(event.keyCode)">
+<body>
 <div class="site-wrapper">
     <div class="site-wrapper-inner">
 
@@ -278,11 +278,11 @@
                 var final=1;
                 var plus=0;
                 function detectHit(x1,y1,x2,y2,r) {
-                    if (((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) <= (r) * (r)) return false;
-                    return true;
+                    return ((x2 - x1) * (x2 - x1) + (y2 - y1) * (y2 - y1)) > (r) * (r);
+
                 }
-                    function runUpDownForwardBack(k) {
-                        canvas.addEventListener('touchmove', function() {
+                    function initTouch() {
+                        canvas.addEventListener('touchmove', function(event) {
                             var touch = event.targetTouches[0];
                             if (detectHit(myCircle.x, myCircle.y, touch.pageX, touch.pageY, myCircle.r)) {
                                     myCircle.x= touch.pageX;
@@ -563,6 +563,9 @@
                     }
                     alert(resulte);
                 }
+
+
+                initTouch();
             </script>
         </div>
     </div>
