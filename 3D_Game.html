@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The  game 0.3</title>
+    <link href="css/bootstrap.min.css" rel="stylesheet">
+    <link href="cover_game1.css" rel="stylesheet">
+</head>
+<body onkeydown="jumper(event.keyCode);">
+<div class="site-wrapper">
+    <div class="site-wrapper-inner">
+
+        <div class="cover-container">
+            <canvas class="canvas" id="myCanvas" width="1000" height="500"></canvas>
+            <br>
+            <br>
+            <script>
+                function reDrawCircle(myCircle, context) {
+                    drawCircle(myCircle.oldX, myCircle.oldY, myCircle.r, myCircle.background, myCircle.borderWidth + 2, myCircle.background, context);
+                    drawCircle(myCircle.x, myCircle.y, myCircle.r, myCircle.fillStyle, myCircle.borderWidth, myCircle.strokeStyle, context);
+                    myCircle.oldX = myCircle.x;
+                    myCircle.oldY = myCircle.y;
+                }
+
+                function drawCircle(x, y, r, fillStyle, borderWidth, strokeStyle, context) {
+                    context.beginPath();
+                    context.arc(x, y, r, 0, 2 * Math.PI, false);
+                    context.fillStyle = fillStyle;
+                    context.fill();
+                    context.lineWidth = borderWidth;
+                    context.strokeStyle = strokeStyle;
+                    context.stroke();
+                }
+                var canvas = document.getElementById('myCanvas');
+                var context = canvas.getContext('2d');
+                var centerX = canvas.width / 5;
+                var centerY = canvas.height / 2;
+                var radiuss=30;
+                var radius=70;
+                var myCircle={
+                    x: centerX,
+                    y: centerY,
+                    oldX: centerX,
+                    oldY: centerY,
+                    r: radiuss,
+                    borderWidth: 5,
+                    fillStyle: 'blue',
+                    strokeStyle: '#003300',
+                    background: 'white'
+                };
+                //jump=true;
+                var jump=false;
+                var score=0;
+                var final=1;
+                var plus=0;
+                function jumper(k) {
+                    switch (k) {
+                        case 32:
+                            if(jump==false){
+                                for (var i=0;i<50;i++) {
+                                    if (i<25) {
+                                        myCircle.y+=10;
+                                        reDrawCircle(myCircle, context);
+                                    }
+                                    else {
+                                        myCircle.y-=1;
+                                        reDrawCircle(myCircle, context);
+                                    }
+                                    if (i<49){
+                                        jump=false;
+                                    }
+                                }
+                            }
+                            break;
+                    }
+                }
+                var spCircle={
+                    color: "red",
+                    bg: "white"
+                };
+                var rad=20;
+                reDrawCircle(myCircle,context);
+                drawspCircle(spCircle,context);
+                function drawspCircle(spCircle,context){
+                    var delay=20;
+                    for (var j=0;j<50;j++) {
+                        setTimeout(function() {
+                            context.beginPath();
+                            context.arc(200, 200, rad, 0, 2 * Math.PI, false);
+                            context.fillStyle = spCircle.color;
+                            context.fill();
+                            context.lineWidth = 5;
+                            context.strokeStyle = spCircle.color;
+                            context.stroke();
+                            rad+=1;
+                            reDrawCircle(myCircle, context);
+                            //delay+=1;
+                        },delay);
+                    }
+                    setTimeout(function() {
+                        context.beginPath();
+                        context.arc(200, 200, rad, 0, 2 * Math.PI, false);
+                        context.fillStyle = spCircle.bg;
+                        context.fill();
+                        context.lineWidth = 6;
+                        context.strokeStyle = spCircle.bg;
+                        context.stroke();
+                        rad = 0;
+                        reDrawCircle(myCircle, context);
+                    },1000);
+                }
+            </script>
+        </div>
+    </div>
+</div>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+</body>
+</html>
